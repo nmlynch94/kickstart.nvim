@@ -676,6 +676,7 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
+        terraformls = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -741,6 +742,26 @@ require('lazy').setup({
         mode = '',
         desc = '[F]ormat buffer',
       },
+      {
+        '<leader>f',
+        function()
+          local start_pos = vim.api.nvim_buf_get_mark(0, '<')
+          local end_pos = vim.api.nvim_buf_get_mark(0, '>')
+          -- Ensure start is before end (visual block can be backwards)
+          if start_pos[1] > end_pos[1] or (start_pos[1] == end_pos[1] and start_pos[2] > end_pos[2]) then
+            local temp = start_pos
+            start_pos = end_pos
+            end_pos = temp
+          end
+          local range = {
+            start = { start_pos[1], start_pos[2] },
+            ['end'] = { end_pos[1], end_pos[2] },
+          }
+          require('conform').format { async = true, lsp_format = 'fallback', range = range }
+        end,
+        mode = 'v',
+        desc = '[F]ormat selection',
+      },
     },
     opts = {
       notify_on_error = false,
@@ -760,6 +781,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        terraformls = { 'terraform_fmt' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
