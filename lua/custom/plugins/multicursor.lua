@@ -10,17 +10,31 @@ return {
 
       -- Add or skip cursor above/below the main cursor.
       set({ 'n', 'x' }, '<up>', function()
-        mc.lineAddCursor(-1)
+        count = vim.v.count
+        if count == 0 then
+          count = 1
+        end
+        for i = 1, count do
+          mc.lineAddCursor(-1)
+        end
       end)
       set({ 'n', 'x' }, '<down>', function()
-        mc.lineAddCursor(1)
+        count = vim.v.count
+        if count == 0 then
+          count = 1
+        end
+        for i = 1, count do
+          mc.lineAddCursor(1)
+        end
       end)
-      set({ 'n', 'x' }, '<leader><up>', function()
-        mc.lineSkipCursor(-1)
-      end)
+      set({ 'n', 'x' }, '<leader><up>', function() end)
+
       set({ 'n', 'x' }, '<leader><down>', function()
         mc.lineSkipCursor(1)
       end)
+
+      -- Add a cursor for all matches of cursor word/selection in the document.
+      set({ 'n', 'x' }, '<leader>A', mc.matchAllAddCursors)
 
       -- Add or skip adding a new cursor by matching word/selection
       set({ 'n', 'x' }, '<leader>n', function()
